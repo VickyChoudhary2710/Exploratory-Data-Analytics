@@ -1,0 +1,98 @@
+import csv
+import pandas as pd
+import numpy as np
+from scipy import stats
+mileage=pd.read_csv('mileage.csv')
+mileage=mileage.set_index(mileage['Unnamed: 0'])
+dc=mileage.dtypes
+
+del mileage['Unnamed: 0']
+print(mileage)
+mileage=mileage.replace('.',np.NaN)
+print(mileage)
+
+for i in mileage.columns:
+     if (mileage[i].dtype=='object'):
+         mileage[i]=pd.to_numeric(mileage[i])
+         
+for i in mileage.columns:
+    mileage[i]=mileage[i].fillna((mileage[i].mean()))  #instead of mean any value can be used
+dc=mileage.dtypes                                      #.dropna() is used to drop missing values
+print(mileage)
+
+mean=mileage.apply(np.mean,axis=0)   #gives dataframe
+print(mean)
+
+std=mileage.apply(np.std,axis=0)
+print(std)
+
+median=mileage.apply(np.median,axis=0)
+print(median)
+
+skew=mileage.skew(axis=0)   #Gives dataframe
+print(skew)
+
+#stats.skew(mileage) gives an array same with kurtosis
+kurt=mileage.kurt(axis=0)   #Gives dataframe                # three is added to get pearson coeeficient of kurtosis
+print(kurt)
+
+import matplotlib.pylab as plt
+from stemgraphic import stem_graphic;
+from matplotlib.backends.backend_pdf import PdfPages
+
+pp=PdfPages('Stem_Leaf.pdf')
+f, fig=stem_graphic(mileage['mpg'])
+f.suptitle("mpg")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['cyl'])
+f.suptitle("cyl")
+f.savefig(pp,format='pdf')
+     
+f, fig=stem_graphic(mileage['disp'])
+f.suptitle("disp")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['hp'])
+f.suptitle("hp")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['drat'])
+f.suptitle("drat")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['wt'])
+f.suptitle("wt")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['qsec'])
+f.suptitle("qsec")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['vs'])
+f.suptitle("vs")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['am'])
+f.suptitle("am")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['gear'])
+f.suptitle("gear")
+f.savefig(pp,format='pdf')
+
+f, fig=stem_graphic(mileage['carb'])
+f.suptitle("carb")
+f.savefig(pp,format='pdf')
+
+plt.show()      
+qq=PdfPages('Boxplot.pdf')
+
+plt.boxplot(mileage['mpg'])
+plt.title('mpg')
+plt.savefig(qq,format='pdf')
+plt.show()
+plt.boxplot(mileage['cyl'])
+plt.title('cyl')
+plt.savefig(qq,format='pdf')
+qq.close()
