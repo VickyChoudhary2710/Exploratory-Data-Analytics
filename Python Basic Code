@@ -1,0 +1,124 @@
+import numpy as np
+import pandas as pd
+#Case 1
+print("Required series is")
+z=['110001','110002','110003','110004','110005','110006','110007','110008','110009','110010']
+i=['New Delhi', 'Ajmeri Gate', 'Pandara Road', 'Rashtrapati Bhavan', 'Karol Bagh', 'Chandani Chowk', 'Delhi University', 'Patel Nagar', 'Hudson Lane', 'Army Base']
+p=pd.Series(z,index=i)
+print("Answer Case 1")
+print(p)
+print("Pincode of Pandara Road is:",p['Pandara Road'])
+print("Pincode of Hudson Lane is:", p['Hudson Lane'])
+print("\n")
+
+#Case 2.1
+print("Answer Case 2.1")
+print("Required matrix is")
+A=np.matrix([[2,0,1],[4,3,8],[7,6,9]])
+print(A)
+rowsum=A.sum(axis=1)
+colsum=A.sum(axis=0)
+tr=np.matrix.trace(A)
+eig=np.linalg.eig(A)
+print("Row sum of matrix are",rowsum)
+print("Column sum of matrix are",colsum)
+print("Trace of matrix is",tr)
+print("Eigen Values and Eigen vectors are")
+print(eig)
+det=np.linalg.det(A)
+inv=np.linalg.inv(A)   #linalg.solve to solve equations
+print("determinant of matrix is ",det)
+print("Inverse of Matrix is")
+print(inv)
+
+#Case 2.2(labelling is not possible in matrix in python so doing it by dataframe)
+print("Answer Case 2.2")
+a=np.matrix([[83,67],[78,63],[67,60],[97,78],[50,89]])
+r=['Adam','Erica','Jennifer','Robert','Holly']
+c=['S_1','S_2']
+print("Data set A")
+A=pd.DataFrame(a,index=r,columns=c)
+print(A)
+print("Data set A_S3")
+A_S3=np.array([53,88,79,76,80])
+A_S3=pd.DataFrame(A_S3,index=r,columns=['S_3'])
+print(A_S3)
+print("Combined Data Set A and A_S3")
+A=pd.merge(A,A_S3,left_index=True,right_index=True,how="outer")   #inner take values with same no. of columns in outer missing columns are taken as Nan
+print(A)                                                          #Example of diff btw inner outer at https://stackoverflow.com/questions/38022230/finding-merge-outer-inner-pandas-df-differences
+b=np.array([[83,67,65],[78,63,75],[67,60,59],[97,78,73],[50,89,49]])
+c=['S_1','S_2','S_3']
+r=['Ana','Era','Joel','William','James']
+B=pd.DataFrame(b,index=r,columns=c)
+print("Data set B")
+print(B)
+frames=[A,B]
+A=pd.concat(frames)
+print("Final Data Set")
+print(A)
+n=len(A)
+m=len(A.columns)
+rowsum=A.sum(axis=1)
+colsum=A.sum(axis=0)
+Student_Percentage=(rowsum/(m*100))*100
+Student_Percentage=pd.DataFrame(Student_Percentage,columns=['Percentage Marks'])
+print("Percentage of each Student")
+print(Student_Percentage)
+mean_sub=A.mean(axis=0)
+mean_sub=pd.DataFrame(mean_sub,columns=['Mean'])
+print("Average of Each Subject")
+print(mean_sub)
+
+#Case 2.3
+print("Answer Case 2.4")
+x=np.matrix([[2,3,5],[4,8,9],[1,2,-4]])
+print("X is")
+print(x)
+b=np.matrix([34,20,-18])
+b=b.T
+print("b is ")
+print(b)
+print("Solution is")
+sol=np.linalg.solve(x,b)
+print(sol)
+
+
+
+#Case 4
+print("Answer Case 4")
+import csv
+import matplotlib.pylab as plt
+data=pd.read_csv('demand.csv')
+plt.style.use('ggplot')
+print("Given Data is")
+print(data)
+pv = pd.pivot_table(data, index='Quarter', columns='Year',
+                    values='Demand (in thousand units)', aggfunc='sum')
+print("data in pivot table form")
+print(pv)
+
+#plotting
+#line for each year differently on same graph
+a=pv.plot()
+a.set_ylabel('Demand in Thousand')
+plt.savefig('For Each Year.pdf')
+pv1=pv.T
+#bar for each ear differently on same graph
+b=pv1.plot(kind='bar')
+b.set_ylabel('Demand in Thousand')
+plt.savefig('Bar.pdf')
+#Time series yearly graph 2001 to 2005
+df = pd.DataFrame(pd.date_range('2001-01-01', freq='Q', periods=20),columns=['t'])
+df['t'] = df['t'].dt.to_period('M')
+data=pd.merge(data,df,left_index=True,right_index=True,how="outer")
+p=data.plot(x='t',y='Demand (in thousand units)')
+p.set_ylabel('Demand in Thousand')
+plt.savefig('Demand.pdf')
+#Averages
+#Averages are saved to csv files named 'Yearly_avg.csv' and 'Quarter_avg.csv'
+year_avg=data['Demand (in thousand units)'].groupby(data['Year']).mean()
+quarter_avg=data['Demand (in thousand units)'].groupby(data['Quarter']).mean()      #.describe() give all estimates
+
+year_avg.to_csv('Yearly_avg.csv',sep=',',header=['Average'])
+quarter_avg.to_csv('Quarter_avg.csv',sep=',',header=['Average'])
+print("Average of Quarter 1 and quarter 4 are more tha 2 and 3 hence they are better")
