@@ -1,0 +1,174 @@
+#Reading File
+mileage<-read.csv("mileage-1.csv",TRUE,",")
+#install.packages("Hmisc")
+#install.packages("moments")
+#install.packages("ppcor")
+library(Hmisc)
+library(moments)
+library(ppcor)
+##EDA for individual variables
+
+#Finding Missing Value
+mileage[mileage=="."]<-NA
+is.na(mileage$mpg)
+is.na(mileage$cyl)
+is.na(mileage$disp)
+is.na(mileage$hp)
+is.na(mileage$drat)
+is.na(mileage$wt)
+is.na(mileage$qsec)
+is.na(mileage$vs)
+is.na(mileage$am)
+is.na(mileage$gear)
+is.na(mileage$carb)
+#We have missing observations in disp and drat
+
+#Replacing Missing Values(by mean values)
+
+mileage$disp<-as.numeric(as.character(mileage$disp))
+mileage$disp[is.na(mileage$disp)]<-mean(mileage$disp,na.rm=T)
+mileage$drat<-as.numeric(as.character(mileage$drat))
+mileage$drat[is.na(mileage$drat)]<-mean(mileage$drat,na.rm=T)
+
+#Measure of Central Tendency, Dispersion, Skewness and Kurtosis
+
+mileage[,1]<-NULL
+#Mean
+sapply(mileage,mean)
+#Variance
+sapply(mileage,var)
+#QD
+sapply(mileage,quantile)
+
+
+#SKewness and kurtosis
+skewness(mileage)
+kurtosis(mileage)
+skewness_data<-data.frame(skewness(mileage))
+kurtosis_data<-data.frame(kurtosis(mileage))
+skewness_data[1,]
+#Symmetry
+for(i in 1:(ncol(mileage)))
+{
+  if(skewness_data[i,]<(-0.25))
+    cat(sprintf( "In variable %d skewness is negative\n",i))
+  else if(skewness_data[i,]<0.25 && skewness_data>-0.25)
+  {
+    cat(sprintf("The variable %d is symmetric\n",i))
+  }
+  else
+  {
+    cat(sprintf("In variable %d skewness is positive\n",i))
+  }
+}
+#Peakedness
+for(i in 1:(ncol(mileage)))
+{
+  if(kurtosis_data[i,]<2.75)
+    cat(sprintf( "The variable %d is having platykurtic curve(flatter curve)\n",i))
+  else if(kurtosis_data[i,]>2.75 && kurtosis_data[i,]<3.25)
+  {
+    cat(sprintf("The variable %d is having normal curve(mesokutic curve)\n",i))
+  }
+  else
+  {
+    cat(sprintf("The variable %d is having lepokurtic curve(peaked curve)\n",i))
+  }
+}
+
+##Plots
+#Stem and leaf plot
+stem(mileage$mpg)
+stem(mileage$cyl)
+stem(mileage$disp)
+stem(mileage$hp)
+stem(mileage$drat)
+stem(mileage$wt)
+stem(mileage$qsec)
+stem(mileage$vs)
+stem(mileage$am)
+stem(mileage$gear)
+stem(mileage$carb)
+#Histogram
+hist(mileage$mpg)
+hist(mileage$cyl)
+hist(mileage$disp)
+hist(mileage$hp)
+hist(mileage$drat)
+hist(mileage$wt)
+hist(mileage$qsec)
+hist(mileage$vs)
+hist(mileage$am)
+hist(mileage$gear)
+hist(mileage$carb)
+
+#Finding outliesr using Boxplot
+boxplot(mileage$mpg,horizontal = T)
+boxplot(mileage$cyl,horizontal = T)
+boxplot(mileage$disp,horizontal = T)
+boxplot(mileage$hp,horizontal = T)  
+boxplot(mileage$drat,horizontal = T)
+boxplot(mileage$wt,horizontal = T)   
+boxplot(mileage$qsec,horizontal = T)
+boxplot(mileage$vs,horizontal = T)
+boxplot(mileage$am,horizontal = T)
+boxplot(mileage$gear,horizontal = T)
+boxplot(mileage$carb,horizontal = T)  
+#Outliers are found in following variables  hp,wt,qsec and carb.
+
+##Replacement of outliers
+#For hp
+mileage[31,4]<-NA    #31st obs is the outlier
+mileage$hp[is.na(mileage$hp)]<-mean(mileage$hp,na.rm=T)
+#For wt
+mileage[16,6]<-NA    #16th and 17th  obs are the outliers
+mileage[17,6]<-NA 
+mileage$wt[is.na(mileage$wt)]<-mean(mileage$wt,na.rm=T)
+mileage[15,6]<-NA     #15th obs is outlier
+mileage$wt[is.na(mileage$wt)]<-mean(mileage$wt,na.rm=T)
+#For qsec
+mileage[9,7]<-NA    #10th obs is the outlier
+mileage$qsec[is.na(mileage$qsec)]<-mean(mileage$qsec,na.rm=T)
+#For carb
+mileage[31,11]<-NA    #10th obs is the outlier
+mileage$carb[is.na(mileage$carb)]<-mean(mileage$carb,na.rm=T)
+
+#Normalization Test
+par(mfrow=c(2,3))
+hist(mileage[,1],main="mpg")
+hist(mileage[,3],main="disp")
+hist(mileage[,5],main="drat")
+hist(mileage[,6],main="wt")
+hist(mileage[,8],main="qsec")
+#From Histogram nothing can be concluded about normality
+#Shapiro Test for Normality
+shapiro.test(mileage$mpg)
+shapiro.test(mileage$disp)
+shapiro.test(mileage$drat)
+shapiro.test(mileage$wt)
+shapiro.test(mileage$qsec)
+
+##EDA for multiple variables
+#Scatter plot
+plot(mileage[,c(1:11)])
+#Simple correlation
+cor(mileage[,c(1:11)],method = "pearson")
+pcor(mileage[,c(1:11)],method="pearson")
+pcor(mileage[,c(1:11)],method="spearman")
+#Significance test
+for(i in 1:ncol(mileage))
+{
+  for(j in 1:ncol(mileage))
+  {
+    if(i!=j)
+    {
+      cat(sprintf( "The significance test for correlation between variables %d and %d is\n",i,j))
+      print(cor.test(mileage[,i],mileage[,j],method = "pearson"))
+    }
+  }
+}
+#Parallel Boxplots
+boxplot(mileage$am,mileage$cyl)
+
+
+
